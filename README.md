@@ -1,0 +1,2 @@
+# Kurashi-Log
+Kurashi-Log
