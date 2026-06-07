@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kurashi-Log - 生活管理ダッシュボード</title>
+    <title>Kurashi-Log - 生活管理ダッシュボード Refined</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -22,69 +22,31 @@
             --warning: #f59e0b;
             --info: #3b82f6;
             --savings: #6366f1;
+            --bar-track: #e2e8f0; /* グラフの溝の色を少し濃く */
         }
 
-        body {
-            font-family: 'Inter', 'Noto Sans JP', sans-serif;
-            margin: 0;
-            display: flex;
-            height: 100vh;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-        }
+        body { font-family: 'Inter', 'Noto Sans JP', sans-serif; margin: 0; display: flex; height: 100vh; background-color: var(--bg-color); color: var(--text-main); }
 
         /* --- サイドバー --- */
-        aside {
-            width: 260px;
-            background: var(--sidebar-bg);
-            color: var(--sidebar-text);
-            display: flex;
-            flex-direction: column;
-            flex-shrink: 0;
-            box-shadow: 4px 0 10px rgba(0,0,0,0.05);
-        }
-        .sidebar-header {
-            padding: 32px 24px;
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: white;
-            display: flex;
-            align-items: center; gap: 10px;
-            border-bottom: 1px solid #1e293b;
-        }
-        .nav-list { list-style: none; padding: 20px 12px; margin: 0; flex: 1; }
-        .nav-item {
-            padding: 12px 16px;
-            cursor: pointer;
-            display: flex;
-            align-items: center; gap: 12px;
-            border-radius: 8px;
-            transition: all 0.2s;
-            font-weight: 500;
-            margin-bottom: 4px;
-        }
+        aside { width: 260px; background: var(--sidebar-bg); color: var(--sidebar-text); display: flex; flex-direction: column; flex-shrink: 0; box-shadow: 4px 0 10px rgba(0,0,0,0.05); }
+        .sidebar-header { padding: 32px 24px; font-size: 1.2rem; font-weight: 700; color: white; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #1e293b; }
+        .nav-list { list-style: none; padding: 20px 12px; margin: 0; flex: 1; overflow-y: auto; }
+        .nav-item { padding: 12px 16px; cursor: pointer; display: flex; align-items: center; gap: 12px; border-radius: 8px; transition: 0.2s; font-weight: 500; margin-bottom: 4px; }
         .nav-item:hover { background: #1e293b; color: white; }
         .nav-item.active { background: var(--sidebar-active); color: white; }
-        .nav-icon { width: 24px; height: 24px; stroke: currentColor; fill: none; stroke-width: 2; }
-        
+        .nav-icon { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; }
         .sidebar-footer { padding: 15px; border-top: 1px solid #1e293b; display: flex; flex-direction: column; gap: 8px; }
 
-        /* --- メインコンテンツ --- */
+        /* --- メインレイアウト --- */
         .main-wrapper { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
-        .top-bar {
-            background: white; padding: 16px 40px; border-bottom: 1px solid var(--border);
-            display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10;
-        }
+        .top-bar { background: white; padding: 16px 40px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10; }
         .content-area { padding: 40px; max-width: 1100px; margin: 0 auto; width: 100%; box-sizing: border-box; }
         .view-section { display: none; }
-        .view-section.active { display: block; }
+        .view-section.active { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* --- ボタン --- */
-        button {
-            font-family: inherit; font-weight: 600; padding: 10px 18px; border-radius: 8px;
-            border: none; cursor: pointer; font-size: 0.85rem; transition: 0.2s;
-            display: inline-flex; align-items: center; gap: 6px;
-        }
+        /* --- 共通パーツ --- */
+        button { font-family: inherit; font-weight: 600; padding: 10px 18px; border-radius: 8px; border: none; cursor: pointer; font-size: 0.85rem; transition: 0.2s; display: inline-flex; align-items: center; gap: 6px; }
         .btn-primary { background: var(--primary); color: white; }
         .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
         .btn-outline { background: white; border: 1px solid var(--border); color: var(--text-main); }
@@ -92,51 +54,45 @@
         .btn-ghost { background: transparent; color: var(--text-muted); padding: 6px; border-radius: 6px; }
         .btn-ghost:hover { color: var(--danger); background: #fee2e2; }
 
-        /* --- 表内入力 (Direct Edit) --- */
-        .table-input {
-            width: 100%; border: 1px solid transparent; background: transparent;
-            padding: 8px; border-radius: 4px; font-family: inherit; font-size: 0.95rem;
-            color: var(--text-main); transition: 0.2s;
-        }
+        .table-input { width: 100%; border: 1px solid transparent; background: transparent; padding: 8px; border-radius: 4px; font-family: inherit; font-size: 0.95rem; color: var(--text-main); transition: 0.2s; }
         .table-input:hover { background: #f1f5f9; border-color: var(--border); }
-        .table-input:focus { background: white; border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1); }
+        .table-input:focus { background: white; border-color: var(--primary); outline: none; }
         .table-input.price { text-align: right; font-weight: 700; }
 
-        /* --- カード --- */
-        .card { background: white; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 24px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .card { background: white; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 24px; overflow: hidden; }
         .card-header { padding: 16px 24px; background: #f8fafc; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-        .section-title { font-weight: 700; font-size: 1rem; color: var(--text-main); }
-        
         .item-table { width: 100%; border-collapse: collapse; }
         .item-table td { padding: 8px 16px; border-bottom: 1px solid #f1f5f9; }
-        
-        input, select { padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.9rem; color: var(--text-main); }
+        input, select { padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.9rem; }
 
-        /* --- 収支サマリー表示 --- */
-        .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 24px; }
-        .summary-card { padding: 24px; border-radius: 12px; color: white; display: flex; flex-direction: column; gap: 8px; }
+        /* --- グラフ・サマリー --- */
+        .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; margin-bottom: 24px; }
+        .summary-card { padding: 24px; border-radius: 12px; color: white; }
         .summary-card.income { background: linear-gradient(135deg, #10b981, #059669); }
         .summary-card.expense { background: linear-gradient(135deg, #f43f5e, #e11d48); }
         .summary-card.savings { background: linear-gradient(135deg, #6366f1, #4f46e5); }
         .summary-value { font-size: 1.8rem; font-weight: 800; }
 
-        /* --- カテゴリタグ共通スタイル --- */
-        .category-tag { padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; display: inline-block; min-width: 70px; text-align: center; }
+        .var-breakdown-item { margin-bottom: 16px; }
+        .var-bar-info { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 0.85rem; font-weight: 600; }
+        .var-bar-container { height: 10px; background: var(--bar-track); border-radius: 5px; overflow: hidden; }
+        .var-bar-fill { height: 100%; transition: width 0.5s ease; border-radius: 5px; }
 
-        /* --- 円グラフ --- */
-        .chart-container { display: flex; align-items: center; justify-content: space-around; padding: 20px; flex-wrap: wrap; gap: 40px; }
-        .pie-chart-wrapper { position: relative; width: 220px; height: 220px; }
-        .pie-chart { width: 100%; height: 100%; border-radius: 50%; background: conic-gradient(#eee 0% 100%); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .pie-chart-inner { position: absolute; top: 25%; left: 25%; width: 50%; height: 50%; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--text-muted); font-size: 0.8rem; }
-        .chart-legend { display: flex; flex-direction: column; gap: 12px; min-width: 200px; }
-        .legend-item { display: flex; align-items: center; justify-content: space-between; gap: 15px; font-size: 0.9rem; font-weight: 600; }
-        .legend-label-box { display: flex; align-items: center; gap: 8px; }
-        .legend-color { width: 14px; height: 14px; border-radius: 3px; }
+        .category-tag { padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; display: inline-block; min-width: 90px; text-align: center; }
+        .empty-state { padding: 40px; text-align: center; color: var(--text-muted); font-size: 0.9rem; }
+
+        .chart-container { display: flex; align-items: flex-start; justify-content: space-around; padding: 20px; flex-wrap: wrap; gap: 40px; }
+        .pie-chart-wrapper { position: relative; width: 180px; height: 180px; flex-shrink: 0; }
+        .pie-chart { width: 100%; height: 100%; border-radius: 50%; background: conic-gradient(#eee 0% 100%); }
+        .pie-chart-inner { position: absolute; top: 25%; left: 25%; width: 50%; height: 50%; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--text-muted); font-size: 0.65rem; }
+        .chart-legend { display: flex; flex-direction: column; gap: 10px; min-width: 200px; flex: 1; }
+        .legend-item { display: flex; align-items: center; justify-content: space-between; gap: 15px; font-size: 0.85rem; }
+        .legend-color { width: 10px; height: 10px; border-radius: 2px; display: inline-block; margin-right: 8px; }
 
         @media (max-width: 768px) {
-            aside { width: 80px; }
+            aside { width: 70px; }
             .nav-text, .sidebar-header span, .sidebar-footer { display: none; }
-            .summary-grid { grid-template-columns: 1fr; }
+            .content-area { padding: 20px; }
         }
     </style>
 </head>
@@ -174,137 +130,62 @@
         </li>
     </ul>
     <div class="sidebar-footer">
-        <button class="btn-outline" style="background: #1e293b; color: white; border: none; width:100%" onclick="exportAllData()">全データを保存</button>
-        <button class="btn-outline" style="background: #1e293b; color: white; border: none; width:100%" onclick="triggerImport('all')">全データを読込</button>
-        <button class="btn-ghost" style="color: #ef4444; width:100%" onclick="clearAllData()">データリセット</button>
+        <button class="btn-outline" style="background: #1e293b; color: white; border: none;" onclick="exportAllData()">全データ保存</button>
+        <button class="btn-outline" style="background: #1e293b; color: white; border: none;" onclick="triggerImport()">データ読込</button>
+        <button class="btn-ghost" style="color: #ef4444;" onclick="clearAllData()">データリセット</button>
     </div>
 </aside>
 
 <div class="main-wrapper">
     <header class="top-bar">
         <h1 id="viewTitle" style="margin:0; font-size:1.4rem; font-weight: 800;">収支サマリー</h1>
-        <div class="stats-grid">
-            <div class="stat-item">
-                <span class="stat-label" id="topStatLabel">今月の貯金額</span>
-                <div class="stat-value" style="color: var(--primary);">¥<span id="topStatValue">0</span></div>
-            </div>
+        <div>
+            <span id="topStatLabel" style="font-size:0.8rem; color:var(--text-muted); display:block; text-align:right">今月の貯金額</span>
+            <div style="font-size:1.4rem; font-weight:800; color:var(--primary)">¥<span id="topStatValue">0</span></div>
         </div>
     </header>
 
     <main class="content-area">
-        <!-- 収支サマリー -->
+        <div id="global-month-nav" class="month-nav" style="display:flex; align-items:center; gap:15px; margin-bottom:24px;">
+            <button class="btn-outline" onclick="App.changeGlobalMonth(-1)">◀</button>
+            <div class="month-text-display" style="font-weight:700; font-size:1.1rem;"></div>
+            <button class="btn-outline" onclick="App.changeGlobalMonth(1)">▶</button>
+            <input type="month" id="monthPicker" onchange="App.setMonth(this.value)" style="margin-left:auto">
+        </div>
+
         <section id="view-summary" class="view-section active">
-            <div class="month-nav" style="display:flex; align-items:center; gap:15px; margin-bottom:24px;">
-                <button class="btn-outline" onclick="changeGlobalMonth(-1)">◀</button>
-                <div class="current-month-display month-text-display" style="font-weight:700; font-size:1.1rem;">2024年4月</div>
-                <button class="btn-outline" onclick="changeGlobalMonth(1)">▶</button>
-            </div>
-
             <div class="summary-grid">
-                <div class="summary-card income">
-                    <span style="font-size:0.8rem; font-weight:600;">総収入</span>
-                    <span class="summary-value">¥<span id="sum-income">0</span></span>
-                </div>
-                <div class="summary-card expense">
-                    <span style="font-size:0.8rem; font-weight:600;">総支出</span>
-                    <span class="summary-value">¥<span id="sum-expense">0</span></span>
-                </div>
-                <div class="summary-card savings">
-                    <span style="font-size:0.8rem; font-weight:600;">貯金（手残り）</span>
-                    <span class="summary-value">¥<span id="sum-savings">0</span></span>
-                </div>
+                <div class="summary-card income"><span>総収入</span><div class="summary-value">¥<span id="sum-income">0</span></div></div>
+                <div class="summary-card expense"><span>総支出</span><div class="summary-value">¥<span id="sum-expense">0</span></div></div>
+                <div class="summary-card savings"><span>貯金（手残り）</span><div class="summary-value">¥<span id="sum-savings">0</span></div></div>
             </div>
-
-            <div class="card">
-                <div class="card-header"><span class="section-title">収入に対する支出の内訳</span></div>
-                <div class="chart-container">
-                    <div class="pie-chart-wrapper">
-                        <div class="pie-chart" id="incomePieChart"></div>
-                        <div class="pie-chart-inner">SAVINGS</div>
-                    </div>
-                    <div class="chart-legend">
-                        <div class="legend-item"><div class="legend-label-box"><div class="legend-color" style="background:var(--danger)"></div>固定費</div><span><span id="leg-fix-p">0</span>% (<span id="leg-fix-v">¥0</span>)</span></div>
-                        <div class="legend-item"><div class="legend-label-box"><div class="legend-color" style="background:var(--warning)"></div>変動費</div><span><span id="leg-var-p">0</span>% (<span id="leg-var-v">¥0</span>)</span></div>
-                        <div class="legend-item"><div class="legend-label-box"><div class="legend-color" style="background:var(--info)"></div>サブスク</div><span><span id="leg-sub-p">0</span>% (<span id="leg-sub-v">¥0</span>)</span></div>
-                        <div class="legend-item"><div class="legend-label-box"><div class="legend-color" style="background:var(--savings)"></div>貯金</div><span><span id="leg-sav-p">0</span>% (<span id="leg-sav-v">¥0</span>)</span></div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 24px;">
+                <div class="card">
+                    <div class="card-header"><span class="section-title">支出全体の内訳</span></div>
+                    <div class="chart-container">
+                        <div class="pie-chart-wrapper"><div class="pie-chart" id="incomePieChart"></div><div class="pie-chart-inner">SAVINGS</div></div>
+                        <div class="chart-legend" id="summary-legend"></div>
                     </div>
                 </div>
-            </div>
-        </section>
-
-        <!-- 収入管理 -->
-        <section id="view-income" class="view-section">
-            <div class="month-nav" style="display:flex; align-items:center; gap:15px; margin-bottom:24px;">
-                <button class="btn-outline" onclick="changeGlobalMonth(-1)">◀</button>
-                <div class="current-month-display month-text-display">2024年4月</div>
-                <button class="btn-outline" onclick="changeGlobalMonth(1)">▶</button>
-                <input type="month" class="month-picker-input" onchange="setGlobalMonth(this.value)" style="margin-left:auto">
-                <button class="btn-outline" onclick="exportSectionData('income')">出力</button>
-                <button class="btn-outline" onclick="triggerImport('income')">読込</button>
-            </div>
-            <div class="card">
-                <div style="padding:24px; display:flex; gap:12px; flex-wrap:wrap;">
-                    <select id="newIncomeCategory"><option value="本業">本業</option><option value="副業">副業</option><option value="その他">その他</option></select>
-                    <input type="text" id="newIncomeName" placeholder="項目名" style="flex:2">
-                    <input type="number" id="newIncomePrice" placeholder="金額" style="flex:1" onkeydown="if(event.key==='Enter')addIncomeItem()">
-                    <button class="btn-primary" onclick="addIncomeItem()">追加</button>
+                <div class="card">
+                    <div class="card-header"><span class="section-title">変動費のカテゴリ別分析</span></div>
+                    <div style="padding: 24px;" id="variable-analysis-container"></div>
                 </div>
             </div>
-            <div class="card"><table class="item-table"><tbody id="incomeTableBody"></tbody></table></div>
         </section>
 
-        <!-- 変動費管理 -->
-        <section id="view-variable" class="view-section">
-            <div class="month-nav" style="display:flex; align-items:center; gap:15px; margin-bottom:24px;">
-                <button class="btn-outline" onclick="changeGlobalMonth(-1)">◀</button>
-                <div class="current-month-display month-text-display">2024年4月</div>
-                <button class="btn-outline" onclick="changeGlobalMonth(1)">▶</button>
-                <input type="month" class="month-picker-input" onchange="setGlobalMonth(this.value)" style="margin-left:auto">
-                <button class="btn-outline" onclick="exportSectionData('variable')">出力</button>
-                <button class="btn-outline" onclick="triggerImport('variable')">読込</button>
-            </div>
+        <section id="view-list" class="view-section">
             <div class="card">
-                <div style="padding:24px; display:flex; gap:12px; flex-wrap:wrap;">
-                    <select id="newVarCategory"><option value="食費">食費</option><option value="日用品">日用品</option><option value="娯楽">娯楽</option><option value="その他">その他</option></select>
-                    <input type="text" id="newVarName" placeholder="項目名" style="flex:2">
-                    <input type="number" id="newVarPrice" placeholder="金額" style="flex:1" onkeydown="if(event.key==='Enter')addVarItem()">
-                    <button class="btn-primary" onclick="addVarItem()">追加</button>
-                </div>
+                <div style="padding:24px; display:flex; gap:12px; flex-wrap:wrap; align-items: flex-end;" id="input-area"></div>
             </div>
-            <div class="card"><table class="item-table"><tbody id="varTableBody"></tbody></table></div>
+            <div class="card" style="overflow-x: auto;"><table class="item-table"><tbody id="listTableBody"></tbody></table></div>
         </section>
 
-        <!-- 固定費管理 -->
-        <section id="view-fixed" class="view-section">
-            <div class="card">
-                <div style="padding:24px; display:flex; gap:12px; flex-wrap:wrap;">
-                    <select id="fixedCategory"><option value="住宅">住宅</option><option value="水道光熱">水道光熱</option><option value="通信">通信費</option></select>
-                    <input type="text" id="fixedName" placeholder="項目名" style="flex:2">
-                    <input type="number" id="fixedPrice" placeholder="金額" style="flex:1" onkeydown="if(event.key==='Enter')addFixedCost()">
-                    <button class="btn-primary" onclick="addFixedCost()">追加</button>
-                </div>
-            </div>
-            <div class="card"><table class="item-table"><tbody id="fixedTableBody"></tbody></table></div>
-        </section>
-
-        <!-- サブスク管理 -->
-        <section id="view-subs" class="view-section">
-            <div class="card">
-                <div style="padding:24px; display:flex; gap:12px; flex-wrap:wrap;">
-                    <input type="text" id="subName" placeholder="サービス名" style="flex:2">
-                    <input type="number" id="subPrice" placeholder="金額" style="flex:1" onkeydown="if(event.key==='Enter')addSubscription()">
-                    <select id="subCycle"><option value="monthly">月払い</option><option value="yearly">年払い</option></select>
-                    <button class="btn-primary" onclick="addSubscription()">追加</button>
-                </div>
-            </div>
-            <div class="card"><table class="item-table"><tbody id="subsTableBody"></tbody></table></div>
-        </section>
-
-        <!-- 初期費用リスト -->
         <section id="view-moving" class="view-section">
             <div style="display:flex; gap:10px; margin-bottom:24px;">
-                <input type="text" id="newStoreName" placeholder="店舗名" style="flex:1" onkeydown="if(event.key==='Enter')addStore()">
-                <button class="btn-primary" onclick="addStore()">店舗追加</button>
+                <input type="text" id="newStoreName" placeholder="店舗名" style="flex:1" onkeydown="if(event.key==='Enter')App.addStore()">
+                <button class="btn-primary" onclick="App.addStore()">店舗追加</button>
             </div>
             <div id="movingListsContainer"></div>
         </section>
@@ -314,259 +195,310 @@
 <input type="file" id="universalFileInput" style="display:none" onchange="handleImport(event)">
 
 <script>
-    const STORAGE_KEY = 'kurashi_log_v14';
-    let appData = { moving: {}, fixed: [], subs: [], income: {}, variable: {} };
-    let currentView = 'summary';
-    const now = new Date();
-    let currentSelectedMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+/**
+ * 集中管理型 Kurashi-Log システム
+ */
+const STORAGE_KEY = 'kurashi_log_v6';
+const MAX_PRICE = 999999999; 
 
-    // --- カテゴリカラー定義 ---
-    const CATEGORY_COLORS = {
-        // 収入
-        "本業": { bg: "#dcfce7", text: "#166534" }, // Green
-        "副業": { bg: "#e0f2fe", text: "#075985" }, // Blue
-        // 変動費
-        "食費": { bg: "#ffedd5", text: "#9a3412" }, // Orange
-        "日用品": { bg: "#ecfeff", text: "#0891b2" }, // Cyan
-        "娯楽": { bg: "#fce7f3", text: "#9d174d" }, // Pink
-        // 固定費
-        "住宅": { bg: "#e0e7ff", text: "#3730a3" }, // Indigo
-        "水道光熱": { bg: "#ccfbf1", text: "#0f766e" }, // Teal
-        "通信": { bg: "#f5f3ff", text: "#5b21b6" }, // Violet
-        // 共通
-        "その他": { bg: "#f1f5f9", text: "#475569" } // Gray
-    };
+const App = {
+    // --- データ状態 ---
+    data: { moving: {}, fixed: [], subs: [], income: {}, variable: {} },
+    currentView: 'summary',
+    selectedMonth: '',
 
-    function getCategoryStyle(cat) {
-        const style = CATEGORY_COLORS[cat] || { bg: "#f1f5f9", text: "#475569" };
-        return `background-color: ${style.bg}; color: ${style.text};`;
-    }
+    // --- コンフィグ（タグ色とカテゴリ） ---
+    CATEGORIES: {
+        income: ["本業", "副業", "その他"],
+        variable: ["食費", "日用品", "水道光熱費", "通信費", "交通費", "趣味・娯楽費", "交際費", "被服・美容費", "医療・健康費", "旅行・イベント費", "特別支出", "その他"],
+        fixed: ["住宅", "水道光熱", "通信", "その他"]
+    },
 
-    function loadData() {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) {
-            try { 
-                const parsed = JSON.parse(saved);
-                Object.assign(appData, parsed);
-            } catch (e) { console.error("Load failed", e); }
+    TAG_COLORS: {
+        "本業": { bg: "#dcfce7", text: "#16a34a" }, 
+        "副業": { bg: "#e0f2fe", text: "#0284c7" },
+        "食費": { bg: "#ffedd5", text: "#ea580c" }, 
+        "日用品": { bg: "#ecfeff", text: "#0891b2" },
+        "水道光熱費": { bg: "#ccfbf1", text: "#0d9488" }, 
+        "通信費": { bg: "#f5f3ff", text: "#7c3aed" },
+        "交通費": { bg: "#e0e7ff", text: "#4f46e5" }, 
+        "趣味・娯楽費": { bg: "#fce7f3", text: "#db2777" },
+        "交際費": { bg: "#ffe4e6", text: "#e11d48" }, 
+        "被服・美容費": { bg: "#f3e8ff", text: "#9333ea" },
+        "医療・健康費": { bg: "#fee2e2", text: "#dc2626" }, 
+        "旅行・イベント費": { bg: "#fef3c7", text: "#d97706" },
+        "特別支出": { bg: "#f1f5f9", text: "#475569" }, 
+        "住宅": { bg: "#e0e7ff", text: "#4338ca" },
+        "水道光熱": { bg: "#ccfbf1", text: "#0d9488" },
+        "通信": { bg: "#f5f3ff", text: "#7c3aed" },
+        "その他": { bg: "#f1f5f9", text: "#64748b" }
+    },
+
+    // --- コアメソッド ---
+    init() {
+        const now = new Date();
+        this.selectedMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+        this.load();
+        this.render();
+    },
+
+    load() {
+        try {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) this.data = JSON.parse(saved);
+        } catch (e) { console.error("Load failed", e); }
+    },
+
+    save() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(this.data));
+    },
+
+    setState(updater) {
+        updater(this.data);
+        this.save();
+        this.render();
+    },
+
+    // --- アクション ---
+    setMonth(m) { if(m) { this.selectedMonth = m; this.render(); } },
+
+    changeGlobalMonth(offset) {
+        const [y, m] = this.selectedMonth.split('-').map(Number);
+        const d = new Date(y, m - 1 + offset, 1);
+        this.setMonth(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`);
+    },
+
+    addStore() {
+        const input = document.getElementById('newStoreName');
+        const name = input.value.trim();
+        if (!name || this.data.moving[name]) return;
+        this.setState(d => { d.moving[name] = []; input.value = ''; });
+    },
+
+    executeAdd() {
+        const nInput = document.getElementById('add-name');
+        const pInput = document.getElementById('add-price');
+        const name = nInput.value.trim();
+        const price = parseInt(pInput.value) || 0;
+
+        if (!name) return alert("項目名を入力してください");
+        if (price < 0 || price > MAX_PRICE) return alert("正しい金額を入力してください");
+
+        const cat = document.getElementById('add-cat')?.value || "その他";
+        const item = { name, price, category: cat };
+
+        if (this.currentView === 'subs') {
+            item.cycle = document.getElementById('add-cycle').value;
+            item.start = document.getElementById('add-start').value;
+            item.end = document.getElementById('add-end').value;
         }
-    }
 
-    function saveData() { localStorage.setItem(STORAGE_KEY, JSON.stringify(appData)); }
+        this.setState(d => {
+            if (['income', 'variable'].includes(this.currentView)) {
+                if (!d[this.currentView][this.selectedMonth]) d[this.currentView][this.selectedMonth] = [];
+                d[this.currentView][this.selectedMonth].push(item);
+            } else {
+                d[this.currentView].push(item);
+            }
+            nInput.value = ''; pInput.value = '';
+        });
+    },
 
-    function clearAllData() {
-        if(confirm('すべてのデータがリセットされます。')) {
-            appData = { moving: {}, fixed: [], subs: [], income: {}, variable: {} };
-            saveData(); render();
-        }
-    }
+    updateVal(type, idx, key, val, subKey = null) {
+        this.setState(d => {
+            const item = subKey ? d[type][subKey][idx] : d[type][idx];
+            if (!item) return;
+            item[key] = (key === 'price') ? Math.min(MAX_PRICE, Math.max(0, parseInt(val) || 0)) : val;
+        });
+    },
 
-    function switchView(view, el) {
-        currentView = view;
-        document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
-        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-        document.getElementById(`view-${view}`).classList.add('active');
-        el.classList.add('active');
-        
-        const labels = { summary: '今月の貯金額', income: '今月の収入合計', variable: '今月の変動費合計', fixed: '固定費合計(月額)', subs: 'サブスク合計(月換算)', moving: '購入合計額' };
-        const titles = { summary: '収支サマリー', income: '月別収入管理', variable: '月別変動費管理', fixed: '固定費管理', subs: 'サブスク管理', moving: '初期費用リスト' };
-        
-        document.getElementById('viewTitle').innerText = titles[view];
-        document.getElementById('topStatLabel').innerText = labels[view];
-        render();
-    }
-
-    function setGlobalMonth(val) { currentSelectedMonth = val; render(); }
-    function changeGlobalMonth(offset) {
-        const [year, month] = currentSelectedMonth.split('-').map(Number);
-        const date = new Date(year, month - 1 + offset, 1);
-        currentSelectedMonth = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-        render();
-    }
-
-    // 値を直接書き換えた時の同期処理
-    function updateVal(type, index, key, value, subKey = null) {
-        let item;
-        if (subKey) item = appData[type][subKey][index];
-        else item = appData[type][index];
-
-        if (key === 'price') value = parseInt(value) || 0;
-        item[key] = value;
-        saveData();
-        updateTopStats();
-        if (currentView === 'summary') renderSummary();
-    }
-
-    // --- データ追加 ---
-    function addIncomeItem() {
-        const nInput = document.getElementById('newIncomeName'), pInput = document.getElementById('newIncomePrice');
-        if (nInput.value && pInput.value) {
-            if (!appData.income[currentSelectedMonth]) appData.income[currentSelectedMonth] = [];
-            appData.income[currentSelectedMonth].push({ name: nInput.value, price: parseInt(pInput.value), category: document.getElementById('newIncomeCategory').value });
-            nInput.value = ''; pInput.value = ''; saveData(); render();
-        }
-    }
-    function addVarItem() {
-        const nInput = document.getElementById('newVarName'), pInput = document.getElementById('newVarPrice');
-        if (nInput.value && pInput.value) {
-            if (!appData.variable[currentSelectedMonth]) appData.variable[currentSelectedMonth] = [];
-            appData.variable[currentSelectedMonth].push({ name: nInput.value, price: parseInt(pInput.value), category: document.getElementById('newVarCategory').value });
-            nInput.value = ''; pInput.value = ''; saveData(); render();
-        }
-    }
-    function addFixedCost() {
-        const nInput = document.getElementById('fixedName'), pInput = document.getElementById('fixedPrice');
-        if (nInput.value && pInput.value) {
-            appData.fixed.push({ name: nInput.value, price: parseInt(pInput.value), category: document.getElementById('fixedCategory').value });
-            nInput.value = ''; pInput.value = ''; saveData(); render();
-        }
-    }
-    function addSubscription() {
-        const nInput = document.getElementById('subName'), pInput = document.getElementById('subPrice');
-        if (nInput.value && pInput.value) {
-            appData.subs.push({ name: nInput.value, price: parseInt(pInput.value), cycle: document.getElementById('subCycle').value });
-            nInput.value = ''; pInput.value = ''; saveData(); render();
-        }
-    }
-    function addStore() {
-        const nInput = document.getElementById('newStoreName');
-        if (nInput.value && !appData.moving[nInput.value]) {
-            appData.moving[nInput.value] = []; nInput.value = ''; saveData(); render();
-        }
-    }
+    deleteItem(type, idx, subKey = null) {
+        if (!confirm("削除しますか？")) return;
+        this.setState(d => {
+            if (subKey) d[type][subKey].splice(idx, 1);
+            else d[type].splice(idx, 1);
+        });
+    },
 
     // --- レンダリング ---
-    function render() {
-        const [y, m] = currentSelectedMonth.split('-');
-        document.querySelectorAll('.month-text-display').forEach(el => el.innerText = `${y}年${parseInt(m)}月`);
-        document.querySelectorAll('.month-picker-input').forEach(el => el.value = currentSelectedMonth);
-        
-        renderSummary();
-        renderIncome();
-        renderVariable();
-        renderFixed();
-        renderSubs();
-        renderMoving();
+    render() {
         updateTopStats();
-    }
+        document.querySelectorAll('.month-text-display').forEach(el => el.innerText = this.selectedMonth.replace('-', '年') + '月');
+        const picker = document.getElementById('monthPicker'); if(picker) picker.value = this.selectedMonth;
 
-    function updateTopStats() {
-        let val = 0;
-        if (currentView === 'summary') {
-            let inc = 0, exp = 0;
-            (appData.income[currentSelectedMonth] || []).forEach(i => inc += i.price);
-            (appData.variable[currentSelectedMonth] || []).forEach(i => exp += i.price);
-            appData.fixed.forEach(i => exp += i.price);
-            appData.subs.forEach(s => exp += (s.cycle === 'monthly' ? s.price : Math.round(s.price / 12)));
-            val = inc - exp;
-        } else if (currentView === 'income') (appData.income[currentSelectedMonth] || []).forEach(i => val += i.price);
-        else if (currentView === 'variable') (appData.variable[currentSelectedMonth] || []).forEach(i => val += i.price);
-        else if (currentView === 'fixed') appData.fixed.forEach(i => val += i.price);
-        else if (currentView === 'subs') appData.subs.forEach(s => val += (s.cycle === 'monthly' ? s.price : Math.round(s.price / 12)));
-        else if (currentView === 'moving') for (let s in appData.moving) appData.moving[s].forEach(i => val += i.price);
-        
-        document.getElementById('topStatValue').innerText = val.toLocaleString();
+        if (this.currentView === 'summary') renderSummary();
+        else if (this.currentView === 'moving') renderMoving();
+        else renderListSection();
     }
+};
 
-    function renderSummary() {
-        let inc = 0, vEx = 0, fEx = 0, sEx = 0;
-        (appData.income[currentSelectedMonth] || []).forEach(i => inc += i.price);
-        (appData.variable[currentSelectedMonth] || []).forEach(i => vEx += i.price);
-        appData.fixed.forEach(i => fEx += i.price);
-        appData.subs.forEach(s => sEx += (s.cycle === 'monthly' ? s.price : Math.round(s.price / 12)));
-        const totalEx = vEx + fEx + sEx, sav = inc - totalEx;
+const fmt = (v) => Number(v).toLocaleString();
+const getTagStyle = (cat) => {
+    const s = App.TAG_COLORS[cat] || { bg: "#f1f5f9", text: "#475569" };
+    return `background-color: ${s.bg}; color: ${s.text};`;
+};
 
-        document.getElementById('sum-income').innerText = inc.toLocaleString();
-        document.getElementById('sum-expense').innerText = totalEx.toLocaleString();
-        document.getElementById('sum-savings').innerText = sav.toLocaleString();
+// --- ビュー切り替え ---
+function switchView(view, el) {
+    App.currentView = view;
+    document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+    el.classList.add('active');
+    
+    const sid = (view === 'moving') ? 'view-moving' : (view === 'summary' ? 'view-summary' : 'view-list');
+    document.getElementById(sid).classList.add('active');
+    
+    document.getElementById('global-month-nav').style.display = (['fixed', 'subs', 'moving'].includes(view)) ? 'none' : 'flex';
+    const titles = { summary: '収支サマリー', income: '月別収入管理', variable: '月別変動費管理', fixed: '固定費管理', subs: 'サブスク管理', moving: '初期費用リスト' };
+    document.getElementById('viewTitle').innerText = titles[view];
+    App.render();
+}
 
-        const pie = document.getElementById('incomePieChart');
-        const den = Math.max(inc, totalEx);
-        if (den === 0) { pie.style.background = `conic-gradient(#eee 0% 100%)`; return; }
-        const fP = (fEx/den)*100, vP = (vEx/den)*100, sP = (sEx/den)*100, savP = sav>0?(sav/den)*100:0;
-        pie.style.background = `conic-gradient(var(--danger) 0% ${fP}%, var(--warning) ${fP}% ${fP+vP}%, var(--info) ${fP+vP}% ${fP+vP+sP}%, var(--savings) ${fP+vP+sP}% ${fP+vP+sP+savP}%, #eee ${fP+vP+sP+savP}% 100%)`;
-        document.getElementById('leg-fix-p').innerText = fP.toFixed(1); document.getElementById('leg-fix-v').innerText = `¥${fEx.toLocaleString()}`;
-        document.getElementById('leg-var-p').innerText = vP.toFixed(1); document.getElementById('leg-var-v').innerText = `¥${vEx.toLocaleString()}`;
-        document.getElementById('leg-sub-p').innerText = sP.toFixed(1); document.getElementById('leg-sub-v').innerText = `¥${sEx.toLocaleString()}`;
-        document.getElementById('leg-sav-p').innerText = savP.toFixed(1); document.getElementById('leg-sav-v').innerText = `¥${Math.max(0,sav).toLocaleString()}`;
-    }
+function updateTopStats() {
+    const m = App.selectedMonth;
+    const inc = (App.data.income[m] || []).reduce((a, b) => a + b.price, 0);
+    const vEx = (App.data.variable[m] || []).reduce((a, b) => a + b.price, 0);
+    const fEx = App.data.fixed.reduce((a, b) => a + b.price, 0);
+    const sEx = App.data.subs.reduce((acc, s) => {
+        if (m >= (s.start||"0000-00") && m <= (s.end||"9999-12")) return acc + (s.cycle === 'monthly' ? s.price : Math.round(s.price / 12));
+        return acc;
+    }, 0);
 
-    function renderIncome() {
-        const body = document.getElementById('incomeTableBody'); if (!body) return;
-        body.innerHTML = (appData.income[currentSelectedMonth] || []).map((item, idx) => `
-            <tr><td style="width:100px"><span class="category-tag" style="${getCategoryStyle(item.category)}">${item.category}</span></td>
-            <td><input class="table-input" value="${item.name}" onchange="updateVal('income', ${idx}, 'name', this.value, '${currentSelectedMonth}')"></td>
-            <td><input class="table-input price" type="number" value="${item.price}" onchange="updateVal('income', ${idx}, 'price', this.value, '${currentSelectedMonth}')"></td>
-            <td style="width:40px"><button class="btn-ghost" onclick="appData.income['${currentSelectedMonth}'].splice(${idx},1); saveData(); render();">✕</button></td></tr>`).join('');
+    let val = 0;
+    const labels = { summary: '今月の貯金額', income: '収入合計', variable: '変動費合計', fixed: '固定費合計', subs: 'サブスク合計', moving: '初期費用合計' };
+    document.getElementById('topStatLabel').innerText = labels[App.currentView];
+
+    if (App.currentView === 'summary') val = inc - (vEx + fEx + sEx);
+    else if (App.currentView === 'income') val = inc;
+    else if (App.currentView === 'variable') val = vEx;
+    else if (App.currentView === 'fixed') val = fEx;
+    else if (App.currentView === 'subs') val = sEx;
+    else { for (let s in App.data.moving) App.data.moving[s].forEach(i => val += i.price); }
+    
+    document.getElementById('topStatValue').innerText = fmt(val);
+}
+
+function renderSummary() {
+    const m = App.selectedMonth;
+    const curVars = (App.data.variable[m] || []);
+    const inc = (App.data.income[m] || []).reduce((a, b) => a + b.price, 0);
+    const vEx = curVars.reduce((a, b) => a + b.price, 0);
+    const fEx = App.data.fixed.reduce((a, b) => a + b.price, 0);
+    const sEx = App.data.subs.reduce((acc, s) => {
+        if (m >= (s.start||"0000-00") && m <= (s.end||"9999-12")) return acc + (s.cycle === 'monthly' ? s.price : Math.round(s.price / 12));
+        return acc;
+    }, 0);
+    const totalEx = vEx + fEx + sEx, sav = inc - totalEx;
+
+    document.getElementById('sum-income').innerText = fmt(inc);
+    document.getElementById('sum-expense').innerText = fmt(totalEx);
+    document.getElementById('sum-savings').innerText = fmt(sav);
+
+    // 円グラフ
+    const den = Math.max(inc, totalEx, 1);
+    const fP = (fEx/den)*100, vP = (vEx/den)*100, sP = (sEx/den)*100, savP = sav>0?(sav/den)*100:0;
+    document.getElementById('incomePieChart').style.background = `conic-gradient(var(--danger) 0% ${fP}%, var(--warning) ${fP}% ${fP+vP}%, var(--info) ${fP+vP}% ${fP+vP+sP}%, var(--savings) ${fP+vP+sP}% ${fP+vP+sP+savP}%, #eee ${fP+vP+sP+savP}% 100%)`;
+    document.getElementById('summary-legend').innerHTML = `
+        <div class="legend-item"><span><i class="legend-color" style="background:var(--danger)"></i>固定費</span><b>${fP.toFixed(1)}% (¥${fmt(fEx)})</b></div>
+        <div class="legend-item"><span><i class="legend-color" style="background:var(--warning)"></i>変動費</span><b>${vP.toFixed(1)}% (¥${fmt(vEx)})</b></div>
+        <div class="legend-item"><span><i class="legend-color" style="background:var(--info)"></i>サブスク</span><b>${sP.toFixed(1)}% (¥${fmt(sEx)})</b></div>
+        <div class="legend-item"><span><i class="legend-color" style="background:var(--savings)"></i>貯金</span><b>${savP.toFixed(1)}% (¥${fmt(Math.max(0,sav))})</b></div>
+    `;
+
+    // 変動費分析（棒グラフ）
+    const container = document.getElementById('variable-analysis-container');
+    if (!curVars.length) {
+        container.innerHTML = `<div class="empty-state">データがありません</div>`;
+    } else {
+        const catTotals = {}; curVars.forEach(i => catTotals[i.category] = (catTotals[i.category]||0)+i.price);
+        const sorted = Object.entries(catTotals).sort((a,b)=>b[1]-a[1]);
+        const maxVal = sorted[0][1];
+        container.innerHTML = sorted.map(([cat, val]) => {
+            const percent = (val/vEx)*100, barWidth = (val/maxVal)*100;
+            const color = App.TAG_COLORS[cat]?.text || '#6366f1';
+            return `<div class="var-breakdown-item">
+                <div class="var-bar-info">
+                    <span>${cat} <small style="color:var(--text-muted); font-weight:normal;">(${percent.toFixed(1)}%)</small></span>
+                    <span>¥${fmt(val)}</span>
+                </div>
+                <div class="var-bar-container">
+                    <div class="var-bar-fill" style="width:${barWidth}%; background:${color}; shadow: 0 0 4px ${color}44"></div>
+                </div>
+            </div>`;
+        }).join('');
     }
-    function renderVariable() {
-        const body = document.getElementById('varTableBody'); if (!body) return;
-        body.innerHTML = (appData.variable[currentSelectedMonth] || []).map((item, idx) => `
-            <tr><td style="width:100px"><span class="category-tag" style="${getCategoryStyle(item.category)}">${item.category}</span></td>
-            <td><input class="table-input" value="${item.name}" onchange="updateVal('variable', ${idx}, 'name', this.value, '${currentSelectedMonth}')"></td>
-            <td><input class="table-input price" type="number" value="${item.price}" onchange="updateVal('variable', ${idx}, 'price', this.value, '${currentSelectedMonth}')"></td>
-            <td style="width:40px"><button class="btn-ghost" onclick="appData.variable['${currentSelectedMonth}'].splice(${idx},1); saveData(); render();">✕</button></td></tr>`).join('');
-    }
-    function renderFixed() {
-        const body = document.getElementById('fixedTableBody'); if (!body) return;
-        body.innerHTML = appData.fixed.map((item, idx) => `
-            <tr><td style="width:100px"><span class="category-tag" style="${getCategoryStyle(item.category)}">${item.category}</span></td>
-            <td><input class="table-input" value="${item.name}" onchange="updateVal('fixed', ${idx}, 'name', this.value)"></td>
-            <td><input class="table-input price" type="number" value="${item.price}" onchange="updateVal('fixed', ${idx}, 'price', this.value)"></td>
-            <td style="width:40px"><button class="btn-ghost" onclick="appData.fixed.splice(${idx},1); saveData(); render();">✕</button></td></tr>`).join('');
-    }
-    function renderSubs() {
-        const body = document.getElementById('subsTableBody'); if (!body) return;
-        body.innerHTML = appData.subs.map((item, idx) => `
-            <tr><td><input class="table-input" value="${item.name}" onchange="updateVal('subs', ${idx}, 'name', this.value)"></td>
-            <td>${item.cycle==='monthly'?'月払い':'年払い'}</td>
-            <td><input class="table-input price" type="number" value="${item.price}" onchange="updateVal('subs', ${idx}, 'price', this.value)"></td>
-            <td style="width:40px"><button class="btn-ghost" onclick="appData.subs.splice(${idx},1); saveData(); render();">✕</button></td></tr>`).join('');
-    }
-    function renderMoving() {
-        const container = document.getElementById('movingListsContainer'); if (!container) return;
-        container.innerHTML = '';
-        for (const store in appData.moving) {
-            const rows = appData.moving[store].map((item, idx) => `<tr>
-                <td><input class="table-input" value="${item.name}" onchange="updateVal('moving', ${idx}, 'name', this.value, '${store}')"></td>
-                <td><input class="table-input price" type="number" value="${item.price}" onchange="updateVal('moving', ${idx}, 'price', this.value, '${store}')"></td>
-                <td style="width:40px"><button class="btn-ghost" onclick="appData.moving['${store}'].splice(${idx},1); saveData(); render();">✕</button></td></tr>`).join('');
-            const card = document.createElement('div'); card.className = 'card';
-            card.innerHTML = `<div class="card-header"><span class="section-title">${store}</span><button class="btn-ghost" onclick="delete appData.moving['${store}']; saveData(); render();">削除</button></div>
-                <div style="padding:12px 24px; border-bottom:1px solid #eee; display:flex; gap:12px; background: #fafafa;">
-                    <input type="text" id="add-move-n-${store}" placeholder="商品名" style="flex:1">
-                    <input type="number" id="add-move-p-${store}" placeholder="¥" style="width:100px" onkeydown="if(event.key==='Enter'){const n=document.getElementById('add-move-n-${store}'),p=document.getElementById('add-move-p-${store}');if(n.value&&p.value){appData.moving['${store}'].push({name:n.value,price:parseInt(p.value)});saveData();render();}}">
-                    <button class="btn-primary" onclick="const n=document.getElementById('add-move-n-${store}'),p=document.getElementById('add-move-p-${store}');if(n.value&&p.value){appData.moving['${store}'].push({name:n.value,price:parseInt(p.value)});saveData();render();}">追加</button>
-                </div><table class="item-table">${rows}</table>`;
-            container.appendChild(card);
+}
+
+function renderListSection() {
+    const inputArea = document.getElementById('input-area');
+    const body = document.getElementById('listTableBody');
+    const cats = App.CATEGORIES[App.currentView] || [];
+    
+    inputArea.innerHTML = `
+        <div style="display:flex; flex-direction:column; gap:4px;"><label style="font-size:0.7rem;">項目名</label><input type="text" id="add-name" placeholder="例: Amazon"></div>
+        <div style="display:flex; flex-direction:column; gap:4px;"><label style="font-size:0.7rem;">金額</label><input type="number" id="add-price" placeholder="¥" onkeydown="if(event.key==='Enter')App.executeAdd()"></div>
+        ${cats.length ? `<div style="display:flex; flex-direction:column; gap:4px;"><label style="font-size:0.7rem;">カテゴリ</label><select id="add-cat">${cats.map(c => `<option value="${c}">${c}</option>`).join('')}</select></div>` : ''}
+        ${App.currentView === 'subs' ? `<div style="display:flex; flex-direction:column; gap:4px;"><label style="font-size:0.7rem;">周期</label><select id="add-cycle"><option value="monthly">月額</option><option value="yearly">年額</option></select></div>
+        <div style="display:flex; flex-direction:column; gap:4px;"><label style="font-size:0.7rem;">開始月</label><input type="month" id="add-start"></div>
+        <div style="display:flex; flex-direction:column; gap:4px;"><label style="font-size:0.7rem;">終了月</label><input type="month" id="add-end"></div>` : ''}
+        <button class="btn-primary" onclick="App.executeAdd()">追加</button>
+    `;
+
+    const list = ['income', 'variable'].includes(App.currentView) ? (App.data[App.currentView][App.selectedMonth]||[]) : App.data[App.currentView];
+    body.innerHTML = list.length ? list.map((item, idx) => {
+        const subKeyStr = ['income', 'variable'].includes(App.currentView) ? `'${App.selectedMonth}'` : 'null';
+        let badge = item.category ? `<span class="category-tag" style="${getTagStyle(item.category)}">${item.category}</span>` : "";
+        if (App.currentView === 'subs') {
+            const active = (App.selectedMonth >= (item.start||"0000-00") && App.selectedMonth <= (item.end||"9999-12"));
+            badge = active ? `<span style="color:var(--success); font-size:0.7rem;">● 有効</span>` : `<span style="color:var(--text-muted); font-size:0.7rem;">○ 期間外</span>`;
         }
-    }
+        return `<tr><td style="width:100px">${badge}</td>
+            <td><input class="table-input" value="${item.name}" onchange="App.updateVal('${App.currentView}', ${idx}, 'name', this.value, ${subKeyStr})"></td>
+            <td style="width:130px"><input class="table-input price" type="number" value="${item.price}" onchange="App.updateVal('${App.currentView}', ${idx}, 'price', this.value, ${subKeyStr})"></td>
+            ${App.currentView === 'subs' ? `<td style="width:100px"><select class="table-input" onchange="App.updateVal('subs', ${idx}, 'cycle', this.value)"><option value="monthly" ${item.cycle==='monthly'?'selected':''}>月額</option><option value="yearly" ${item.cycle==='yearly'?'selected':''}>年額</option></select></td>
+            <td style="width:260px; font-size:0.8rem;"><input type="month" class="table-input" style="width:110px" value="${item.start||''}" onchange="App.updateVal('subs', ${idx}, 'start', this.value)"> 〜 <input type="month" class="table-input" style="width:110px" value="${item.end||''}" onchange="App.updateVal('subs', ${idx}, 'end', this.value)"></td>` : ''}
+            <td style="width:40px"><button class="btn-ghost" onclick="App.deleteItem('${App.currentView}', ${idx}, ${subKeyStr})">✕</button></td></tr>`;
+    }).join('') : `<tr><td colspan="6" class="empty-state">データがありません</td></tr>`;
+}
 
-    // 入出力
-    function triggerImport(target) { currentImportTarget = target; document.getElementById('universalFileInput').click(); }
-    function handleImport(event) {
-        const file = event.target.files[0]; if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            try {
-                const imported = JSON.parse(e.target.result);
-                if (currentImportTarget === 'all') appData = imported;
-                else appData[currentImportTarget] = Object.assign(appData[currentImportTarget], imported[currentImportTarget] || imported);
-                saveData(); render();
-            } catch (err) { alert('失敗'); }
-        };
-        reader.readAsText(file);
+function renderMoving() {
+    const container = document.getElementById('movingListsContainer'); container.innerHTML = '';
+    for (const store in App.data.moving) {
+        const rows = App.data.moving[store].map((item, idx) => `<tr><td><input class="table-input" value="${item.name}" onchange="App.updateVal('moving', ${idx}, 'name', this.value, '${store}')"></td><td><input class="table-input price" type="number" value="${item.price}" onchange="App.updateVal('moving', ${idx}, 'price', this.value, '${store}')"></td><td style="width:40px"><button class="btn-ghost" onclick="App.deleteItem('moving', ${idx}, '${store}')">✕</button></td></tr>`).join('');
+        const card = document.createElement('div'); card.className = 'card';
+        card.innerHTML = `<div class="card-header"><span class="section-title">${store}</span><button class="btn-ghost" style="color:var(--danger)" onclick="if(confirm('店舗を削除？')){App.setState(d=>{delete d.moving['${store}']});}">削除</button></div>
+            <div style="padding:12px 24px; border-bottom:1px solid #eee; display:flex; gap:12px; background: #fafafa;"><input type="text" id="m-n-${store}" placeholder="商品名" style="flex:1"><input type="number" id="m-p-${store}" placeholder="¥" style="width:100px" onkeydown="if(event.key==='Enter')addStoreItem('${store}')"><button class="btn-primary" onclick="addStoreItem('${store}')">追加</button></div><table class="item-table">${rows || '<tr><td class="empty-state">なし</td></tr>'}</table>`;
+        container.appendChild(card);
     }
-    function exportAllData() { downloadJson(appData, 'kurashi_log_full.json'); }
-    function exportSectionData(target) { downloadJson({ [target]: appData[target] }, `kurashi_log_${target}.json`); }
-    function downloadJson(data, filename) {
-        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a'); a.href = url; a.download = filename; a.click();
-    }
+}
 
-    loadData(); render();
+function addStoreItem(store) {
+    const n = document.getElementById(`m-n-${store}`), p = document.getElementById(`m-p-${store}`);
+    const name = n.value.trim(), price = parseInt(p.value) || 0;
+    if (!name) return;
+    App.setState(d => d.moving[store].push({name, price}));
+}
+
+function triggerImport() { document.getElementById('universalFileInput').click(); }
+function handleImport(e) {
+    const file = e.target.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (evt) => { 
+        try { 
+            const imported = JSON.parse(evt.target.result); 
+            App.setState(d => Object.assign(d, imported));
+            alert("読み込み完了");
+        } catch (err) { alert("無効なファイル形式です"); }
+    };
+    reader.readAsText(file);
+}
+function exportAllData() {
+    const blob = new Blob([JSON.stringify(App.data, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `kurashi_log_full.json`; a.click();
+}
+function clearAllData() { if(confirm('全てのリセット？')) App.setState(d => { d.moving={}; d.fixed=[]; d.subs=[]; d.income={}; d.variable={}; }); }
+
+App.init();
 </script>
-
 </body>
 </html>
